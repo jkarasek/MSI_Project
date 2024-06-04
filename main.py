@@ -151,7 +151,11 @@ if __name__ == '__main__':
 
     # Przeprowadzenie testów statystycznych
     for dset_id, dset in enumerate(d_set):
-        print("\nDataset: ", dset)
+        X, y = d_set[dset]
+
+        mean_results = np.mean(results[dset_id], axis=1)
+        std_results = np.std(results[dset_id], axis=1)
+
         best_clf_idx = np.argmax(mean_results)
         best_clf_name = list(clfs.keys())[best_clf_idx]
 
