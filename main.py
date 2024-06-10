@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
-from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+#from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, BaggingClassifier
+from sklearn.neighbors import KNeighborsClassifier
+#from sklearn.impute import SimpleImputer
+#from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import RepeatedStratifiedKFold
 from sklearn.metrics import accuracy_score
@@ -109,6 +110,7 @@ if __name__ == '__main__':
         'AdaBoost_100': Adaboost(T=100),
         'Random_Forest': RandomForestClassifier(max_depth=2, random_state=random_state),
         'Gradient_Boosting': GradientBoostingClassifier(n_estimators=100, max_depth=1, random_state=random_state),
+        'Bagging': BaggingClassifier(KNeighborsClassifier(n_neighbors=3),n_estimators=100)
     }
 
 # Walidacja krzyżowa
