@@ -15,12 +15,15 @@ from import_mushrooms_dataset import import_mushrooms_dataset
 from scipy.stats import ttest_rel
 import matplotlib.pyplot as plt
 
+random_state = 2  # Definiowanie random_state
+
 class Adaboost(BaseEstimator, ClassifierMixin):
     def __init__(self, T):
         self.T = T
         self.alphas = []
         self.errors = []
         self.weak_learn = []
+        self.random_state = random_state
 
     def calculate_error(self, y, y_pred, weight_t):
         # Obliczanie błędu jako suma wag dla błędnych klasyfikacji
@@ -40,7 +43,7 @@ class Adaboost(BaseEstimator, ClassifierMixin):
         weight_t = np.ones(n_samples) / n_samples
 
         for t in range(self.T):
-            weak_learn = DecisionTreeClassifier(max_depth=1, random_state=random_state)
+            weak_learn = DecisionTreeClassifier(max_depth=1, random_state=self.random_state)
             weak_learn.fit(X, y, sample_weight=weight_t)
             y_pred = weak_learn.predict(X)
             self.weak_learn.append(weak_learn)
@@ -85,8 +88,6 @@ if __name__ == '__main__':
     #         file.write(data)
     # #######################################################################
 
-    random_state = 2 #mozna sobie ustawiac
-
 #zaimportowanie pingwinów i grzybów
     X_penguins, y_penguins = import_penguins_dataset()
 #nrows w grzybach służy do ograniczenia ilość obserwacji, dane są tam przetasowane, a obserwacji jest w sumie ok. 61000
@@ -110,7 +111,7 @@ if __name__ == '__main__':
         'AdaBoost_100': Adaboost(T=100),
         'Random_Forest': RandomForestClassifier(max_depth=2, random_state=random_state),
         'Gradient_Boosting': GradientBoostingClassifier(n_estimators=100, max_depth=1, random_state=random_state),
-        'Bagging': BaggingClassifier(KNeighborsClassifier(n_neighbors=3),n_estimators=100)
+        'Bagging': BaggingClassifier(KNeighborsClassifier(n_neighbors=3), n_estimators=100, random_state=random_state)
     }
 
 # Walidacja krzyżowa
@@ -188,7 +189,7 @@ if __name__ == '__main__':
         stds = np.std(results[i], axis=1)
 
         plt.figure(figsize=(10, 6))
-        plt.bar(clfs.keys(), means, yerr=stds, capsize=5, color=['blue', 'green', 'red', 'cyan'])
+        plt.bar(clfs.keys(), means, yerr=stds, capsize=5, color=['blue', 'green', 'red', 'cyan', 'pink'])
         plt.xlabel('Classifiers')
         plt.ylabel('Mean Accuracy')
         plt.title(f'Performance on {dataset}')
