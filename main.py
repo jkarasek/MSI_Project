@@ -1,10 +1,7 @@
 import numpy as np
 import pandas as pd
-#from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, BaggingClassifier
 from sklearn.neighbors import KNeighborsClassifier
-#from sklearn.impute import SimpleImputer
-#from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import RepeatedStratifiedKFold
 from sklearn.metrics import accuracy_score
@@ -62,38 +59,14 @@ class Adaboost(BaseEstimator, ClassifierMixin):
             y_pred += y_pred_t
         return np.sign(y_pred).astype(int)
 
-class Tools:
-    @staticmethod
-    def missingChecker(data):
-        # Sprawdzenie liczby brakujących wartości w każdej kolumnie
-        missing_values = data.isnull().sum()
-        print("Liczba brakujących wartości w każdej kolumnie:")
-        print(missing_values)
-
-        # Wyświetlenie dokładnych pozycji brakujących wartości
-        missing_data_positions = data.isnull().stack()
-        print("\nDokładne pozycje brakujących wartości (wiersz, kolumna):")
-        print(missing_data_positions[missing_data_positions == True])
 
 if __name__ == '__main__':
-    # Wczytanie datasetów (można to póżniej zamknąć w jakiejś metodzie, najlepiej na każdy dataset oddzielna)
 
-    # #Chwilowo przydatne do przeformatowanie pliku jak cos###################
-    #     with open("datasets/penguins.csv", "r") as file:
-    #         data = file.read()
-    #
-    #     data = data.replace('"', '')
-    #
-    #     with open("datasets/penguins.csv", "w") as file:
-    #         file.write(data)
-    # #######################################################################
-
-#zaimportowanie pingwinów i grzybów
+# Zaimportowanie pingwinów i grzybów
     X_penguins, y_penguins = import_penguins_dataset()
-#nrows w grzybach służy do ograniczenia ilość obserwacji, dane są tam przetasowane, a obserwacji jest w sumie ok. 61000
+
+# nrows w grzybach służy do ograniczenia ilość obserwacji, dane są tam przetasowane, a obserwacji jest w sumie ok. 61000
     X_mushrooms, y_mushrooms = import_mushrooms_dataset(nrows=300)
-
-
 
 # Dane syntetyczne
     X, y = make_classification(n_samples=1000, n_features=20, n_classes=2, random_state=random_state)
@@ -117,10 +90,10 @@ if __name__ == '__main__':
 # Walidacja krzyżowa
     rskf = RepeatedStratifiedKFold(n_splits=2, n_repeats=5, random_state=random_state)
 
-#Zadeklarowanie macierzy wyników
+# Zadeklarowanie macierzy wyników
     results = np.zeros(shape=[len(d_set), len(clfs), rskf.get_n_splits()])
 
-# Cała magia
+# Eksperyment
     for dset_id, dset in enumerate(d_set):
         X, y = d_set[dset]
         print("\nDataset: ", dset)
@@ -141,9 +114,7 @@ if __name__ == '__main__':
         mean_results = np.mean(results[dset_id], axis=1)
         std_results = np.std(results[dset_id], axis=1)
 
-        # print(f"\nAverage mean score vector: {mean_results}") # Wyświetlane poźniej razem z std
-
-# Zapis wyników do pliku (w celu użycia później przy testach statystycznych)
+# Zapis wyników do pliku
     np.save("results.npy", results)
 
     ''' Prezentowane w tabeli na sam koniec
@@ -152,7 +123,7 @@ if __name__ == '__main__':
         print(f"{clf_name}: Średnia={mean_score:.3f}, Odchylenie standardowe={std:.3f}")
     '''
 
-    # Przeprowadzenie testów statystycznych
+# Przeprowadzenie testów statystycznych
     for dset_id, dset in enumerate(d_set):
         X, y = d_set[dset]
 
@@ -174,7 +145,7 @@ if __name__ == '__main__':
                     print(
                         f"Brak istotnej statystycznie różnicy między {clf_name} a najlepszym klasyfikatorem dla {dset}.")
 
-    # Prezentacja wyników w tabeli
+# Prezentacja wyników w tabeli
     results_df = pd.DataFrame({
         'Klasyfikator': list(clfs.keys()),
         'Średnia wyniku': mean_results,
@@ -183,7 +154,7 @@ if __name__ == '__main__':
     print("\nTabela wyników:")
     print(results_df)
 
-    # Rysowanie wykresów
+# Rysowanie wykresów
     for i, dataset in enumerate(d_set.keys()):
         means = np.mean(results[i], axis=1)
         stds = np.std(results[i], axis=1)
